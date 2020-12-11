@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  web:
+    restart: always
+    build: 
+      context: ./services/web
+      dockerfile: Dockerfile.prod
+    volumes:
+      - static_volume:/usr/src/web/app/static
+    expose:
+      - 5000
+    command: gunicorn -w 1 -b 0.0.0.0:5000 wsgi:server
+    networks:
+      - frontend
+
+  nginx:
+    restart: always
+    build: ./services//nginx
+    ports:
+      - "80:80"
+    volumes:
+      - static_volume:/usr/src/web/app/static
+    depends_on:
+      - web
+    networks:
+      - frontend
+
+networks:
+  frontend:
+
+volumes:
+  static_volume:
