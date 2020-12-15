@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   web:
-    restart: always
+    restart: unless-stopped
     build: 
       context: ./services/web
       dockerfile: Dockerfile.prod
@@ -15,16 +15,32 @@ services:
       - frontend
 
   nginx:
-    restart: always
+    restart: unless-stopped
     build: ./services//nginx
     ports:
       - "80:80"
+      - "443:443"
     volumes:
       - static_volume:/usr/src/web/app/static
+      - ./services/certbot/conf:/etc/letsencrypt
+      - ./services/certbot/www:/var/www/certbot
     depends_on:
       - web
     networks:
       - frontend
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  certbot:
+    image: certbot/certbot
+    restart: unless-stopped
+    volumes:
+      - ./services/certbot/conf:/etc/letsencrypt
+      - ./services/certbot/www:/var/www/certbot
+    depends_on:
+      - nginx
+    networks:
+      - frontend
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
 
 networks:
   frontend:

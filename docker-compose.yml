@@ -2,7 +2,6 @@ version: '3.8'
 
 services:
   web:
-    restart: always
     build: 
       context: ./services/web
       dockerfile: Dockerfile
