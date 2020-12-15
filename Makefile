@@ -1,6 +1,6 @@
 certbot-prod:
-	@chmod +x init-letsencrypt.sh
-	@sudo init-letsencrypt.sh
+	@chmod +x ./init-letsencrypt.sh
+	@sudo ./init-letsencrypt.sh
 
 deploy-prod:
 	@docker-compose \
