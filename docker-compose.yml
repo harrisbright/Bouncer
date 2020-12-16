@@ -1,8 +1,7 @@
-version: '3.8'
+version: '3.7'
 
 services:
   web:
-    container_name: web
     restart: unless-stopped
     build: 
       context: ./services/web
@@ -16,7 +15,6 @@ services:
       - frontend
 
   nginx:
-    container_name: nginx
     restart: unless-stopped
     image: nginx:alpine
     ports:
@@ -36,7 +34,6 @@ services:
     command: /bin/sh -c "while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g 'daemon off;'"
 
   certbot:
-    container_name: certbot
     image: certbot/certbot
     restart: unless-stopped
     volumes:
